@@ -12,7 +12,7 @@ func main() {
 	agregarEjercicioACategoria("Flexiones", "Fuerza", 5, "Media", 10, "brazos a 90")
 	agregarEjercicioACategoria("Sentadillas", "Cardio", 20, "Baja", 15, "bajar")
 
-	bluePrintf("\n\n\n\n\n\n\nBienvenido a tu gestor de rutinas de entrenamiento personalizado.")
+	bluePrintf("\n\n\n\n\n\n\nBienvenido a tu gestor de rutinas de entrenamiento personalizado")
 
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
