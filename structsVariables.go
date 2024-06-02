@@ -21,6 +21,13 @@ type Rutina struct {
 	DuracionTotal  int
 }
 
+type RutinaCsv struct {
+	Id             string      `csv:"client_id"`
+	NombreDeRutina string      `csv:"client_nombre_de_rutina"`
+	Ejercicios     []Ejercicio `csv:"client_ejercicios"`
+	DuracionTotal  int         `csv:"client_duracion_total"`
+}
+
 // Categorías de ejercicios por tipo usando un mapa.
 var categorias = make(map[string][]Ejercicio)
 var rutinasL []Rutina
