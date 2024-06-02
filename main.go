@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/csv"
 	"fmt"
 	"os"
 	"strconv"
@@ -16,16 +17,16 @@ func main() {
 		panic(err)
 	}
 	defer rutinasFile.Close()
-	rutinas := []*Rutina{}
+	rutinas := []*RutinaCsv{}
 	if err := gocsv.UnmarshalFile(rutinasFile, &rutinas); err != nil { // Load rutinas from file
 		panic(err)
 	}
-	// for _, rutina := range rutinas {
-	// 	greenPrintf("Id %v\n", rutina.Id)
-	// 	greenPrintf("Nombre de rutina: %v\n", rutina.NombreDeRutina)
-	// 	greenPrintf("Ejercicios:  %v\n", rutina.Ejercicios)
-	// 	greenPrintf("Duracion Total:  %v\n", rutina.DuracionTotal)
-	//}
+	for _, rutina := range rutinas {
+		greenPrintf("Id %v\n", rutina.Id)
+		greenPrintf("Nombre de rutina: %v\n", rutina.NombreDeRutina)
+		greenPrintf("Ejercicios:  %v\n", rutina.Ejercicios)
+		greenPrintf("Duracion Total:  %v\n", rutina.DuracionTotal)
+	}
 
 	if _, err := rutinasFile.Seek(0, 0); err != nil { // Go to the start of the file
 		panic(err)
@@ -35,26 +36,26 @@ func main() {
 	// rutinas = append(rutinas, &Rutina{Id: "2", NombreDeRutina: "Rutina de Diame", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10})
 	// rutinas = append(rutinas, &Rutina{Id: "3", NombreDeRutina: "Rutina de Fran", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10})
 	// rutinas = append(rutinas, &Rutina{Id: "4", NombreDeRutina: "Rutina de Alexis", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10})
-	// csvContent, err2 := gocsv.MarshalString(&rutinas) // Get all rutinas as CSV string
-	//err = gocsv.MarshalFile(&rutinas, rutinasFile)    // Use this to save the CSV back to the file
-	// if err != nil {
-	// 	panic(err)
-	// }
-	//fmt.Println(csvContent) // Display all rutinas as CSV string
-	//reader := csv.NewReader(strings.NewReader(csvContent))
+	csvContent, _ := gocsv.MarshalString(&rutinas) // Get all rutinas as CSV string
+	err = gocsv.MarshalFile(&rutinas, rutinasFile) // Use this to save the CSV back to the file
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(csvContent) // Display all rutinas as CSV string
+	reader := csv.NewReader(strings.NewReader(csvContent))
 
 	// Leer todas las filas
-	// records, err := reader.ReadAll()
-	// if err != nil {
-	// 	panic(err)
-	// }
+	records, err := reader.ReadAll()
+	if err != nil {
+		panic(err)
+	}
 
 	// Mostrar la fila de consulta
-	// consulta := records[2]
-	// redPrintf("Fila de consulta:", consulta)
+	consulta := records[2]
+	redPrintf("Fila de consulta:", consulta)
 	// Acceder a un valor específico en la fila de consulta
-	// consultita := consulta[2] 	// La columna 6 tiene el valor de las calorías
-	// bluePrintf("\nColumna:", consultita)
+	consultita := consulta[1] // La columna 6 tiene el valor de las calorías
+	bluePrintf("\nColumna:", consultita)
 	agregarEjercicioACategoria("Flexiones", "Fuerza", 5, "Media", 10, "brazos a 90")
 	agregarEjercicioACategoria("Sentadillas", "Cardio", 20, "Baja", 15, "bajar")
 
