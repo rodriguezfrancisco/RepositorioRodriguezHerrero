@@ -2,6 +2,11 @@ package main
 
 import (
 	"github.com/fatih/color"
+	"os"
+	
+	
+
+	gocsv "github.com/gocarina/gocsv"
 )
 
 // Ejercicio representa un ejercicio individual en la rutina.
@@ -34,3 +39,17 @@ var rutinasL []Rutina
 var redPrintf = color.New(color.FgRed).PrintfFunc()
 var greenPrintf = color.New(color.FgGreen).PrintfFunc()
 var bluePrintf = color.New(color.FgBlue).PrintfFunc()
+
+func guardarRutinasEnCSV(rutinas []*Rutina) error {
+	rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer rutinasFile.Close()
+
+	if err := gocsv.MarshalFile(&rutinas, rutinasFile); err != nil {
+		return err
+	}
+
+	return nil
+}
