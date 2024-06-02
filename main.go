@@ -32,10 +32,10 @@ func main() {
 		panic(err)
 	}
 
-	// rutinas = append(rutinas, &Rutina{Id: "1", NombreDeRutina: "Rutina de Walter", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10}) // Add rutinas
-	// rutinas = append(rutinas, &Rutina{Id: "2", NombreDeRutina: "Rutina de Diame", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10})
-	// rutinas = append(rutinas, &Rutina{Id: "3", NombreDeRutina: "Rutina de Fran", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10})
-	// rutinas = append(rutinas, &Rutina{Id: "4", NombreDeRutina: "Rutina de Alexis", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10})
+	// rutinas = append(rutinas, &RutinaCsv{Id: "1", NombreDeRutina: "Rutina de Walter", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10}) // Add rutinas
+	// rutinas = append(rutinas, &RutinaCsv{Id: "2", NombreDeRutina: "Rutina de Diame", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10})
+	// rutinas = append(rutinas, &RutinaCsv{Id: "3", NombreDeRutina: "Rutina de Fran", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10})
+	// rutinas = append(rutinas, &RutinaCsv{Id: "4", NombreDeRutina: "Rutina de Alexis", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10})
 	csvContent, _ := gocsv.MarshalString(&rutinas) // Get all rutinas as CSV string
 	err = gocsv.MarshalFile(&rutinas, rutinasFile) // Use this to save the CSV back to the file
 	if err != nil {
