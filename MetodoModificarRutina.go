@@ -8,10 +8,6 @@ import (
 	"strings"
 )
 
-func consultaRutinaCreada(n int) Rutina {
-	return rutinasL[n]
-}
-
 func modificarRutina(nombreDeRut int) {
 	for {
 		greenPrintf("¿Qué modificación querés hacerle?\n")
