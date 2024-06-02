@@ -296,7 +296,7 @@ func crearRutinaPersonalizada() Rutina {
 
 	fmt.Printf("La duración total de su rutina es de %d minutos.\n", rutina.DuracionTotal)
 	rutinasL = append(rutinasL, rutina)
-	fmt.Printf("\n\n\n\n RutinasL %+v", rutinasL)
+	//fmt.Printf("\n\n\n\n RutinasL %+v", rutinasL)
 	return rutina
 }
 
@@ -498,7 +498,8 @@ func main() {
 			return
 		case "1":
 			rutina := crearRutinaPersonalizada()
-			fmt.Printf("Rutina creada: %+v\n", rutina)
+			greenPrintf("Rutina creada: %+v\n", rutina)
+			bluePrintf("Para consultar esta y otras rutinas seleccione 4\n")
 		case "2":
 			solicitarYAgregarEjercicio()
 		case "3":
