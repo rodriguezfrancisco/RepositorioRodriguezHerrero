@@ -229,6 +229,36 @@ func crearRutinaPersonalizada() *Rutina {
 func consultaRutinaCreada(n int) Rutina {
 	return rutinasL[n]
 }
+func guardarRutinaEnCSV(rutina *Rutina) {
+	file, err := os.OpenFile("rutinas.csv", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	rutinas := []*Rutina{rutina}
+	if err := gocsv.MarshalFile(&rutinas, file); err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("La rutina '%s' ha sido guardada correctamente en 'rutinas.csv'.\n", rutina.NombreDeRutina)
+}
+
+func cargarRutinasDesdeCSV() ([]*Rutina, error) {
+	file, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var rutinas []*Rutina
+	if err := gocsv.UnmarshalFile(file, &rutinas); err != nil {
+		return nil, err
+	}
+
+	return rutinas, nil
+}
+
 
 func main() {
 	rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
@@ -340,6 +370,7 @@ func main() {
 		case "1":
 			rutina := crearRutinaPersonalizada()
 			fmt.Printf("Rutina creada: %+v\n", rutina)
+			guardarRutinaEnCSV(rutina)
 		case "2":
 			solicitarYAgregarEjercicio()
 		case "3":

@@ -3,3 +3,5 @@ client_id,client_nombre_de_rutina,client_ejercicios,client_duracion_total
 2,Rutina de Diame,"[{""Nombre"":""flexiones"",""Duracion"":5,""Tipo"":""fuerza"",""Intensidad"":""Media"",""Calorias"":10,""Descripcion"":""brazos a 90""}]",10
 3,Rutina de Fran,"[{""Nombre"":""flexiones"",""Duracion"":5,""Tipo"":""fuerza"",""Intensidad"":""Media"",""Calorias"":10,""Descripcion"":""brazos a 90""}]",10
 4,Rutina de Alexis,"[{""Nombre"":""flexiones"",""Duracion"":5,""Tipo"":""fuerza"",""Intensidad"":""Media"",""Calorias"":10,""Descripcion"":""brazos a 90""}]",10
+client_id,client_nombre_de_rutina,client_ejercicios,client_duracion_total
+5,aaaa,"[{""Nombre"":""flexiones"",""Duracion"":5,""Tipo"":""fuerza"",""Intensidad"":""Media"",""Calorias"":10,""Descripcion"":""brazos a 90""}]",5
