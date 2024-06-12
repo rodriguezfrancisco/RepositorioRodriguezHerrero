@@ -85,7 +85,7 @@ func main() {
 			scanner.Scan()
 			seleccionIn := scanner.Text()
 			seleccion, _ := strconv.Atoi(seleccionIn)
-			if len(rutinasL) < seleccion {
+			if len(rutinasCsv) < seleccion {
 				redPrintf("La rutina seleccionada no existe")
 				continue
 			}
@@ -101,23 +101,32 @@ func main() {
 			}
 			bluePrintf("\nRutina: \n\n")
 			greenPrintf(rutina)
-
+			bluePrintf("\n")
 		case "modificarrutinacreada":
-			if len(rutinasL) == 0 {
+			rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+			if err != nil {
+				panic(err)
+			}
+			defer rutinasFile.Close()
+			rutinasCsv := []*RutinaCsv{}
+			if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Load rutinas from file
+				panic(err)
+			}
+			if len(rutinasCsv) == 0 {
 				redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
 				continue
 			}
 			greenPrintf("Selecciona la rutina que queres modificar:\n")
-			for i, v := range rutinasL {
+			for i, v := range rutinasCsv {
 				rutinaActual := v
 				bluePrintf("%v. ", i+1)
-				fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
+				fmt.Printf("%v\n", rutinaActual)
 			}
 
 			scanner.Scan()
 			seleccionIn := scanner.Text()
 			seleccion, _ := strconv.Atoi(seleccionIn)
-			if len(rutinasL) < seleccion {
+			if len(rutinasCsv) < seleccion {
 				redPrintf("La rutina seleccionada no existe")
 				continue
 			}
@@ -295,21 +304,30 @@ func main() {
 			greenPrintf(rutina)
 			bluePrintf("\n")
 		case "5":
-			if len(rutinasL) == 0 {
+			rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+			if err != nil {
+				panic(err)
+			}
+			defer rutinasFile.Close()
+			rutinasCsv := []*RutinaCsv{}
+			if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Load rutinas from file
+				panic(err)
+			}
+			if len(rutinasCsv) == 0 {
 				redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
 				continue
 			}
 			greenPrintf("Selecciona la rutina que queres modificar:\n")
-			for i, v := range rutinasL {
+			for i, v := range rutinasCsv {
 				rutinaActual := v
 				bluePrintf("%v. ", i+1)
-				fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
+				fmt.Printf("%v\n", rutinaActual)
 			}
 
 			scanner.Scan()
 			seleccionIn := scanner.Text()
 			seleccion, _ := strconv.Atoi(seleccionIn)
-			if len(rutinasL) < seleccion {
+			if len(rutinasCsv) < seleccion {
 				redPrintf("La rutina seleccionada no existe")
 				continue
 			}

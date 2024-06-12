@@ -14,14 +14,26 @@ import (
 func agregarEjercicioARutina(rutina *Rutina, ejercicio Ejercicio) {
 	rutina.Ejercicios = append(rutina.Ejercicios, ejercicio)
 	rutina.DuracionTotal += ejercicio.Duracion
+
 }
 
 // Función para agregar un ejercicio a una rutina existente
 func agregarEjercicioARutinaExistente(nombreDeRut int) {
 
-	// Obtener la rutina seleccionada
-	rutinaSeleccionada := &rutinasL[nombreDeRut]
+	rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+	defer rutinasFile.Close()
+	rutinasCsv := []*RutinaCsv{}
+	if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Load rutinas from file
+		panic(err)
+	}
+	rutinaSeleccionada := rutinasCsv[nombreDeRut]
 
+	// Obtener la rutina seleccionada
+	// rutinaSeleccionada := &rutinasL[nombreDeRut]
+	var rutinaNueva Rutina
 	// Listar categorías disponibles para seleccionar un ejercicio
 	greenPrintf("\nSeleccione una categoría para elegir un ejercicio:\n")
 	for categoria, ejercicios := range categorias {
@@ -60,12 +72,38 @@ func agregarEjercicioARutinaExistente(nombreDeRut int) {
 
 	// Obtener el ejercicio seleccionado
 	ejercicioSeleccionado := ejercicios[seleccionEjercicio-1]
-
+	rutinaNueva.DuracionTotal = rutinaSeleccionada.DuracionTotal
+	rutinaNueva.Ejercicios = rutinaSeleccionada.Ejercicios
+	rutinaNueva.NombreDeRutina = rutinaSeleccionada.NombreDeRutina + "*"
 	// Agregar el ejercicio a la rutina seleccionada
-	agregarEjercicioARutina(rutinaSeleccionada, ejercicioSeleccionado)
+	agregarEjercicioARutina(&rutinaNueva, ejercicioSeleccionado)
 
-	fmt.Printf("\nEjercicio '%s' agregado a la rutina '%s'. Duración total de la rutina: %d Segundos.\n",
-		ejercicioSeleccionado.Nombre, rutinaSeleccionada.NombreDeRutina, rutinaSeleccionada.DuracionTotal)
+	fmt.Printf("\nEjercicio '%s' agregado. La rutina modificada se llama '%s'. Duración total de la rutina: %d Segundos.\n",
+		ejercicioSeleccionado.Nombre, rutinaNueva.NombreDeRutina, rutinaNueva.DuracionTotal)
+
+	//Start save in csv
+	rutinasFile, err = os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+	defer rutinasFile.Close()
+	rutinasCsv = []*RutinaCsv{}
+	if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Load rutinas from file
+		panic(err)
+	}
+
+	if _, err := rutinasFile.Seek(0, 0); err != nil { // Go to the start of the file
+		panic(err)
+	}
+
+	rutinasCreadas := fmt.Sprintf("%v", len(rutinasCsv)+1)
+
+	rutinasCsv = append(rutinasCsv, &RutinaCsv{Id: rutinasCreadas, NombreDeRutina: rutinaNueva.NombreDeRutina, Ejercicios: rutinaNueva.Ejercicios, DuracionTotal: rutinaNueva.DuracionTotal}) // Add rutinas
+
+	err = gocsv.MarshalFile(&rutinasCsv, rutinasFile) // Use this to save the CSV back to the file
+	if err != nil {
+		panic(err)
+	}
 }
 
 // Función para agregar un ejercicio a una categoría.
@@ -338,18 +376,31 @@ func modificarRutina(nombreDeRut int) {
 		case "1":
 			agregarEjercicioARutinaExistente(nombreDeRut)
 		case "editarejercicio":
-			fmt.Print("todavia no disponible")
+			redPrintf("todavia no disponible. Pruebe eliminando y agregando el ejercicio ya modificado\n")
+			continue
+		case "2":
+			redPrintf("todavia no disponible. Pruebe eliminando y agregando el ejercicio ya modificado\n")
 			continue
 		case "eliminarejercicio":
+			rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+			if err != nil {
+				panic(err)
+			}
+			defer rutinasFile.Close()
+			rutinasCsv := []*RutinaCsv{}
+			if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Load rutinas from file
+				panic(err)
+			}
+			rutinaSeleccionada := rutinasCsv[nombreDeRut]
 			greenPrintf("¿Qué ejercicio querés eliminar?(insertar el numero)\n")
-			for i, rut := range rutinasL[nombreDeRut].Ejercicios {
+			for i, rut := range rutinaSeleccionada.Ejercicios {
 				bluePrintf("%v.", i+1)
 				fmt.Printf("%v\n", rut)
 			}
 			scanner.Scan()
 			seleccionIn := scanner.Text()
 			seleccion, _ := strconv.Atoi(seleccionIn)
-			if len(rutinasL[nombreDeRut].Ejercicios) < seleccion || len(rutinasL[nombreDeRut].Ejercicios) == 0 {
+			if len(rutinaSeleccionada.Ejercicios) < seleccion || len(rutinaSeleccionada.Ejercicios) == 0 {
 				fmt.Println("El ejercicio seleccionado no existe")
 				continue
 			}
@@ -357,22 +408,56 @@ func modificarRutina(nombreDeRut int) {
 				redPrintf("Introduzca correctamente el numero de ejercicio\n")
 				continue
 			}
-			rutinasL[nombreDeRut].DuracionTotal -= rutinasL[nombreDeRut].Ejercicios[seleccion-1].Duracion
-			j := rutinasL[nombreDeRut].Ejercicios[:seleccion-1]
-			j = append(j, rutinasL[nombreDeRut].Ejercicios[seleccion:]...)
-			rutinasL[nombreDeRut].Ejercicios = j
-			bluePrintf("Ejercicio eliminado\n")
-			continue
+			rutinaSeleccionada.DuracionTotal -= rutinaSeleccionada.Ejercicios[seleccion-1].Duracion
+			j := rutinaSeleccionada.Ejercicios[:seleccion-1]
+			j = append(j, rutinaSeleccionada.Ejercicios[seleccion:]...)
+			rutinaSeleccionada.Ejercicios = j
+			rutinaSeleccionada.NombreDeRutina = rutinaSeleccionada.NombreDeRutina + "*"
+			//Start save in csv
+			rutinasFile, err = os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+			if err != nil {
+				panic(err)
+			}
+			defer rutinasFile.Close()
+			rutinasCsv = []*RutinaCsv{}
+			if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Load rutinas from file
+				panic(err)
+			}
+
+			if _, err := rutinasFile.Seek(0, 0); err != nil { // Go to the start of the file
+				panic(err)
+			}
+
+			rutinasCreadas := fmt.Sprintf("%v", len(rutinasCsv)+1)
+
+			rutinasCsv = append(rutinasCsv, &RutinaCsv{Id: rutinasCreadas, NombreDeRutina: rutinaSeleccionada.NombreDeRutina, Ejercicios: rutinaSeleccionada.Ejercicios, DuracionTotal: rutinaSeleccionada.DuracionTotal}) // Add rutinas
+
+			err = gocsv.MarshalFile(&rutinasCsv, rutinasFile) // Use this to save the CSV back to the file
+			if err != nil {
+				panic(err)
+			}
+			bluePrintf("Ejercicio eliminado. Nueva rutina %v creada\n", rutinaSeleccionada.NombreDeRutina)
+			return
 		case "3":
+			rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+			if err != nil {
+				panic(err)
+			}
+			defer rutinasFile.Close()
+			rutinasCsv := []*RutinaCsv{}
+			if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Load rutinas from file
+				panic(err)
+			}
+			rutinaSeleccionada := rutinasCsv[nombreDeRut]
 			greenPrintf("¿Qué ejercicio querés eliminar?(insertar el numero)\n")
-			for i, rut := range rutinasL[nombreDeRut].Ejercicios {
+			for i, rut := range rutinaSeleccionada.Ejercicios {
 				bluePrintf("%v.", i+1)
 				fmt.Printf("%v\n", rut)
 			}
 			scanner.Scan()
 			seleccionIn := scanner.Text()
 			seleccion, _ := strconv.Atoi(seleccionIn)
-			if len(rutinasL[nombreDeRut].Ejercicios) < seleccion || len(rutinasL[nombreDeRut].Ejercicios) == 0 {
+			if len(rutinaSeleccionada.Ejercicios) < seleccion || len(rutinaSeleccionada.Ejercicios) == 0 {
 				fmt.Println("El ejercicio seleccionado no existe")
 				continue
 			}
@@ -380,12 +465,36 @@ func modificarRutina(nombreDeRut int) {
 				redPrintf("Introduzca correctamente el numero de ejercicio\n")
 				continue
 			}
-			rutinasL[nombreDeRut].DuracionTotal -= rutinasL[nombreDeRut].Ejercicios[seleccion-1].Duracion
-			j := rutinasL[nombreDeRut].Ejercicios[:seleccion-1]
-			j = append(j, rutinasL[nombreDeRut].Ejercicios[seleccion:]...)
-			rutinasL[nombreDeRut].Ejercicios = j
-			bluePrintf("Ejercicio eliminado\n")
-			continue
+			rutinaSeleccionada.DuracionTotal -= rutinaSeleccionada.Ejercicios[seleccion-1].Duracion
+			j := rutinaSeleccionada.Ejercicios[:seleccion-1]
+			j = append(j, rutinaSeleccionada.Ejercicios[seleccion:]...)
+			rutinaSeleccionada.Ejercicios = j
+			rutinaSeleccionada.NombreDeRutina = rutinaSeleccionada.NombreDeRutina + "*"
+			//Start save in csv
+			rutinasFile, err = os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+			if err != nil {
+				panic(err)
+			}
+			defer rutinasFile.Close()
+			rutinasCsv = []*RutinaCsv{}
+			if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Load rutinas from file
+				panic(err)
+			}
+
+			if _, err := rutinasFile.Seek(0, 0); err != nil { // Go to the start of the file
+				panic(err)
+			}
+
+			rutinasCreadas := fmt.Sprintf("%v", len(rutinasCsv)+1)
+
+			rutinasCsv = append(rutinasCsv, &RutinaCsv{Id: rutinasCreadas, NombreDeRutina: rutinaSeleccionada.NombreDeRutina, Ejercicios: rutinaSeleccionada.Ejercicios, DuracionTotal: rutinaSeleccionada.DuracionTotal}) // Add rutinas
+
+			err = gocsv.MarshalFile(&rutinasCsv, rutinasFile) // Use this to save the CSV back to the file
+			if err != nil {
+				panic(err)
+			}
+			bluePrintf("Ejercicio eliminado. Nueva rutina %v creada\n", rutinaSeleccionada.NombreDeRutina)
+			return
 		case "volver":
 			bluePrintf("Cambios guardados\n")
 			return
