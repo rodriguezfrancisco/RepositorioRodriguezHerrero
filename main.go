@@ -78,7 +78,7 @@ func main() {
 		fmt.Print("Agregar Ejercicios Máximos a una Rutina\n")
 		bluePrintf("7.")
 		fmt.Print("Agregar Ejercicios Minimos a una Rutina\n")
-		bluePrintf("7.")
+		bluePrintf("8.")
 		fmt.Print("Salir\n\n\n")
 		scanner.Scan()
 		comando := scanner.Text()

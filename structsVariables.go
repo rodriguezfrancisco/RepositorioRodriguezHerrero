@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/fatih/color"
-
 	gocsv "github.com/gocarina/gocsv"
 )
 
