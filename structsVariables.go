@@ -1,10 +1,9 @@
 package main
 
 import (
-	"github.com/fatih/color"
 	"os"
-	
-	
+
+	"github.com/fatih/color"
 
 	gocsv "github.com/gocarina/gocsv"
 )
@@ -17,6 +16,7 @@ type Ejercicio struct {
 	Intensidad  string
 	Calorias    int
 	Descripcion string
+	Dificultad  string
 }
 
 // Rutina representa una serie de ejercicios.
