@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"encoding/csv"
 	"fmt"
 	"os"
 	"strconv"
@@ -12,50 +11,6 @@ import (
 )
 
 func main() {
-	rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
-	if err != nil {
-		panic(err)
-	}
-	defer rutinasFile.Close()
-	rutinas := []*RutinaCsv{}
-	if err := gocsv.UnmarshalFile(rutinasFile, &rutinas); err != nil { // Load rutinas from file
-		panic(err)
-	}
-	for _, rutina := range rutinas {
-		greenPrintf("Id %v\n", rutina.Id)
-		greenPrintf("Nombre de rutina: %v\n", rutina.NombreDeRutina)
-		greenPrintf("Ejercicios:  %v\n", rutina.Ejercicios)
-		greenPrintf("Duracion Total:  %v\n", rutina.DuracionTotal)
-	}
-
-	if _, err := rutinasFile.Seek(0, 0); err != nil { // Go to the start of the file
-		panic(err)
-	}
-
-	// rutinas = append(rutinas, &RutinaCsv{Id: "1", NombreDeRutina: "Rutina de Walter", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10}) // Add rutinas
-	// rutinas = append(rutinas, &RutinaCsv{Id: "2", NombreDeRutina: "Rutina de Diame", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10})
-	// rutinas = append(rutinas, &RutinaCsv{Id: "3", NombreDeRutina: "Rutina de Fran", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10})
-	// rutinas = append(rutinas, &RutinaCsv{Id: "4", NombreDeRutina: "Rutina de Alexis", Ejercicios: []Ejercicio{{Nombre: "flexiones", Duracion: 5, Tipo: "fuerza", Intensidad: "Media", Calorias: 10, Descripcion: "brazos a 90"}}, DuracionTotal: 10})
-	csvContent, _ := gocsv.MarshalString(&rutinas) // Get all rutinas as CSV string
-	err = gocsv.MarshalFile(&rutinas, rutinasFile) // Use this to save the CSV back to the file
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(csvContent) // Display all rutinas as CSV string
-	reader := csv.NewReader(strings.NewReader(csvContent))
-
-	// Leer todas las filas
-	records, err := reader.ReadAll()
-	if err != nil {
-		panic(err)
-	}
-
-	// Mostrar la fila de consulta
-	consulta := records[2]
-	redPrintf("Fila de consulta:", consulta)
-	// Acceder a un valor específico en la fila de consulta
-	consultita := consulta[1] // La columna 6 tiene el valor de las calorías
-	bluePrintf("\nColumna:", consultita)
 	agregarEjercicioACategoria("Flexiones", "Fuerza", 5, "Media", 10, "brazos a 90")
 	agregarEjercicioACategoria("Sentadillas", "Cardio", 20, "Baja", 15, "bajar")
 
@@ -94,15 +49,24 @@ func main() {
 				}
 			}
 		case "consultarrutinacreada":
-			if len(rutinasL) == 0 {
+			rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+			if err != nil {
+				panic(err)
+			}
+			defer rutinasFile.Close()
+			rutinasCsv := []*RutinaCsv{}
+			if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Load rutinas from file
+				panic(err)
+			}
+			if len(rutinasCsv) == 0 {
 				redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
 				continue
 			}
 			greenPrintf("Selecciona la rutina que queres ver:\n")
-			for i, v := range rutinasL {
+			for i, v := range rutinasCsv {
 				rutinaActual := v
 				bluePrintf("%v. ", i+1)
-				fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
+				fmt.Printf("%v\n", rutinaActual)
 			}
 			scanner.Scan()
 			seleccionIn := scanner.Text()
@@ -111,7 +75,7 @@ func main() {
 				redPrintf("La rutina seleccionada no existe")
 				continue
 			}
-			var rutina Rutina
+			var rutina string
 			if seleccion == 0 {
 				for i, nombre := range rutinasL {
 					if nombre.NombreDeRutina == seleccionIn {
@@ -121,17 +85,8 @@ func main() {
 			} else {
 				rutina = consultaRutinaCreada(seleccion - 1)
 			}
-			bluePrintf("\nTitulo: ")
-			fmt.Print(rutina.NombreDeRutina)
-			bluePrintf("\nEjercicios: ")
-			for i, v := range rutina.Ejercicios {
-				redPrintf("%v: {", i)
-				greenPrintf("Nombre: %v, Duracion: %v, Categoria: %v, Intensidad: %v, Descripcion: %v, Calorias: %v", v.Nombre, v.Duracion, v.Tipo, v.Intensidad, v.Calorias, v.Descripcion)
-				redPrintf("}\n")
-			}
-			bluePrintf("\nDuracion total: ")
-			fmt.Print(rutina.DuracionTotal)
-			greenPrintf(" Minutos\n")
+			bluePrintf("\nRutina: \n\n")
+			greenPrintf(rutina)
 
 		case "modificarrutinacreada":
 			if len(rutinasL) == 0 {
@@ -179,24 +134,33 @@ func main() {
 				}
 			}
 		case "4":
-			if len(rutinasL) == 0 {
+			rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+			if err != nil {
+				panic(err)
+			}
+			defer rutinasFile.Close()
+			rutinasCsv := []*RutinaCsv{}
+			if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Load rutinas from file
+				panic(err)
+			}
+			if len(rutinasCsv) == 0 {
 				redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
 				continue
 			}
 			greenPrintf("Selecciona la rutina que queres ver:\n")
-			for i, v := range rutinasL {
+			for i, v := range rutinasCsv {
 				rutinaActual := v
 				bluePrintf("%v. ", i+1)
-				fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
+				fmt.Printf("%v\n", rutinaActual)
 			}
 			scanner.Scan()
 			seleccionIn := scanner.Text()
 			seleccion, _ := strconv.Atoi(seleccionIn)
-			if len(rutinasL) < seleccion {
+			if len(rutinasCsv) < seleccion {
 				redPrintf("La rutina seleccionada no existe")
 				continue
 			}
-			var rutina Rutina
+			var rutina string
 			if seleccion == 0 {
 				for i, nombre := range rutinasL {
 					if nombre.NombreDeRutina == seleccionIn {
@@ -206,17 +170,9 @@ func main() {
 			} else {
 				rutina = consultaRutinaCreada(seleccion - 1)
 			}
-			bluePrintf("\nTitulo: ")
-			fmt.Print(rutina.NombreDeRutina)
-			bluePrintf("\nEjercicios: ")
-			for i, v := range rutina.Ejercicios {
-				redPrintf("%v: {", i)
-				greenPrintf("Nombre: %v, Duracion: %v, Categoria: %v, Intensidad: %v, Descripcion: %v, Calorias: %v", v.Nombre, v.Duracion, v.Tipo, v.Intensidad, v.Calorias, v.Descripcion)
-				redPrintf("}\n")
-			}
-			bluePrintf("\nDuracion total: ")
-			fmt.Print(rutina.DuracionTotal)
-			greenPrintf(" Minutos\n")
+			bluePrintf("\nRutina: \n\n")
+			greenPrintf(rutina)
+			bluePrintf("\n")
 		case "5":
 			if len(rutinasL) == 0 {
 				redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
