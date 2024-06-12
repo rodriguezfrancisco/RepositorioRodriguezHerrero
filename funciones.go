@@ -470,52 +470,141 @@ func agregarEjerciciosMaximosARutina(nombreDeRut string /*nombreDeRut int,*/, ca
 	}
 }
 
-func seleccionarEjerciciosMinDuracion(rutina Rutina, categoria string, tiempoDisponible int, dificultad string, tipo string) []Ejercicio {
+/*
+	func seleccionarEjerciciosMinDuracion(rutina Rutina, categoria string, tiempoDisponible int, dificultad string, tipo string) []Ejercicio {
+		ejercicios, ok := categorias[categoria]
+		if !ok {
+			fmt.Println("Categoría no válida.")
+			return nil
+		}
+
+		// Filtrar ejercicios por tipo y dificultad
+		var ejerciciosFiltrados []Ejercicio
+		for _, ejercicio := range ejercicios {
+			if ejercicio.Dificultad == dificultad && ejercicio.Tipo == tipo {
+				ejerciciosFiltrados = append(ejerciciosFiltrados, ejercicio)
+			}
+		}
+
+		// Ordenar los ejercicios por duración de menor a mayor
+		sort.Slice(ejerciciosFiltrados, func(i, j int) bool {
+			return ejerciciosFiltrados[i].Duracion < ejerciciosFiltrados[j].Duracion
+		})
+
+		var ejerciciosSeleccionados []Ejercicio
+		var tiempoTotal int
+
+		for _, ejercicio := range ejerciciosFiltrados {
+			if tiempoTotal+ejercicio.Duracion <= tiempoDisponible {
+				// Verificar si el ejercicio ya está en la rutina para evitar repeticiones
+				if !ejercicioEnRutina(rutina, ejercicio) {
+					ejerciciosSeleccionados = append(ejerciciosSeleccionados, ejercicio)
+					tiempoTotal += ejercicio.Duracion
+				}
+			} else {
+				break
+			}
+		}
+
+		return ejerciciosSeleccionados
+	}
+
+// Función auxiliar para verificar si un ejercicio ya está en la rutina
+
+	func ejercicioEnRutina(rutina Rutina, ejercicio Ejercicio) bool {
+		for _, ej := range rutina.Ejercicios {
+			if ej.Nombre == ejercicio.Nombre {
+				return true
+			}
+		}
+		return false
+	}
+*/
+// Función para seleccionar los ejercicios más eficientes
+func seleccionarEjerciciosEficientes(categoria string, caloriasDeseadas int) []Ejercicio {
 	ejercicios, ok := categorias[categoria]
 	if !ok {
 		fmt.Println("Categoría no válida.")
-		return nil
+		return []Ejercicio{}
 	}
 
-	// Filtrar ejercicios por tipo y dificultad
-	var ejerciciosFiltrados []Ejercicio
-	for _, ejercicio := range ejercicios {
-		if ejercicio.Dificultad == dificultad && ejercicio.Tipo == tipo {
-			ejerciciosFiltrados = append(ejerciciosFiltrados, ejercicio)
-		}
-	}
-
-	// Ordenar los ejercicios por duración de menor a mayor
-	sort.Slice(ejerciciosFiltrados, func(i, j int) bool {
-		return ejerciciosFiltrados[i].Duracion < ejerciciosFiltrados[j].Duracion
+	// Ordenar los ejercicios por la mejor relación calorías/duración
+	sort.Slice(ejercicios, func(i, j int) bool {
+		ratioI := float64(ejercicios[i].Calorias) / float64(ejercicios[i].Duracion)
+		ratioJ := float64(ejercicios[j].Calorias) / float64(ejercicios[j].Duracion)
+		return ratioI > ratioJ
 	})
 
 	var ejerciciosSeleccionados []Ejercicio
-	var tiempoTotal int
+	caloriasTotales := 0
 
-	for _, ejercicio := range ejerciciosFiltrados {
-		if tiempoTotal+ejercicio.Duracion <= tiempoDisponible {
-			// Verificar si el ejercicio ya está en la rutina para evitar repeticiones
-			if !ejercicioEnRutina(rutina, ejercicio) {
-				ejerciciosSeleccionados = append(ejerciciosSeleccionados, ejercicio)
-				tiempoTotal += ejercicio.Duracion
-			}
-		} else {
+	for _, ejercicio := range ejercicios {
+		if ejercicio.Calorias >= caloriasDeseadas {
+			// Si un ejercicio por sí solo cumple el objetivo, seleccionarlo
+			return []Ejercicio{ejercicio}
+		}
+		if caloriasTotales >= caloriasDeseadas {
 			break
 		}
+		ejerciciosSeleccionados = append(ejerciciosSeleccionados, ejercicio)
+		caloriasTotales += ejercicio.Calorias
+	}
+
+	if caloriasTotales < caloriasDeseadas {
+		fmt.Println("No se encontraron suficientes ejercicios para alcanzar las calorías deseadas.")
 	}
 
 	return ejerciciosSeleccionados
 }
 
-// Función auxiliar para verificar si un ejercicio ya está en la rutina
-func ejercicioEnRutina(rutina Rutina, ejercicio Ejercicio) bool {
-	for _, ej := range rutina.Ejercicios {
-		if ej.Nombre == ejercicio.Nombre {
-			return true
-		}
+// Función para agregar los ejercicios eficientes a una rutina
+func agregarEjerciciosEficientesARutina(nombreDeRut string, categoria string, caloriasDeseadas int) {
+	var rutinaSeleccionada Rutina
+	rutinaSeleccionada.NombreDeRutina = nombreDeRut
+
+	ejerciciosEficientes := seleccionarEjerciciosEficientes(categoria, caloriasDeseadas)
+	if len(ejerciciosEficientes) == 0 {
+		fmt.Println("No se pudieron encontrar ejercicios eficientes.")
+		return
 	}
-	return false
+
+	for _, ejercicio := range ejerciciosEficientes {
+		agregarEjercicioARutina(&rutinaSeleccionada, ejercicio)
+	}
+
+	fmt.Printf("\nSe han agregado ejercicios a la rutina '%s' de la categoría '%s' para quemar al menos %d calorías.\n",
+		rutinaSeleccionada.NombreDeRutina, categoria, caloriasDeseadas)
+
+	rutinasL = append(rutinasL, rutinaSeleccionada)
+
+	// Guardar la rutina en CSV
+	rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+	defer rutinasFile.Close()
+	rutinasCsv := []*RutinaCsv{}
+	if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Cargar rutinas del archivo
+		panic(err)
+	}
+
+	if _, err := rutinasFile.Seek(0, 0); err != nil { // Ir al inicio del archivo
+		panic(err)
+	}
+
+	rutinasCreadas := fmt.Sprintf("%v", len(rutinasCsv)+1)
+
+	rutinasCsv = append(rutinasCsv, &RutinaCsv{
+		Id:             rutinasCreadas,
+		NombreDeRutina: rutinaSeleccionada.NombreDeRutina,
+		Ejercicios:     rutinaSeleccionada.Ejercicios,
+		DuracionTotal:  rutinaSeleccionada.DuracionTotal,
+	}) // Agregar rutinas
+
+	err = gocsv.MarshalFile(&rutinasCsv, rutinasFile) // Guardar el CSV en el archivo
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (r *RutinaCsv) String() string {
