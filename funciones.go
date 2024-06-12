@@ -46,7 +46,7 @@ func agregarEjercicioARutinaExistente(nombreDeRut int) {
 	greenPrintf("\nSeleccione un ejercicio de la categoría %v : (inserte el numero de ejercicio)\n", categoriaSeleccionada)
 	for i, ejercicio := range ejercicios {
 		bluePrintf("%d.", i+1)
-		fmt.Printf("%s (Duración: %d minutos, Intensidad: %s)\n", ejercicio.Nombre, ejercicio.Duracion, ejercicio.Intensidad)
+		fmt.Printf("%s (Duración: %d Segundos, Intensidad: %s)\n", ejercicio.Nombre, ejercicio.Duracion, ejercicio.Intensidad)
 	}
 
 	// Escanear la selección de ejercicio
@@ -64,14 +64,14 @@ func agregarEjercicioARutinaExistente(nombreDeRut int) {
 	// Agregar el ejercicio a la rutina seleccionada
 	agregarEjercicioARutina(rutinaSeleccionada, ejercicioSeleccionado)
 
-	fmt.Printf("\nEjercicio '%s' agregado a la rutina '%s'. Duración total de la rutina: %d minutos.\n",
+	fmt.Printf("\nEjercicio '%s' agregado a la rutina '%s'. Duración total de la rutina: %d Segundos.\n",
 		ejercicioSeleccionado.Nombre, rutinaSeleccionada.NombreDeRutina, rutinaSeleccionada.DuracionTotal)
 }
 
 // Función para agregar un ejercicio a una categoría.
 func agregarEjercicioACategoria(nombre, tipo string, duracion int, intensidad string, calorias int, descripcion string) {
-	nombre, tipo = strings.ToLower(nombre), strings.ToLower(tipo)
-	nombre, tipo = strings.ReplaceAll(nombre, " ", ""), strings.ReplaceAll(tipo, " ", "")
+	/*nombre,*/ tipo = /*strings.ToLower(nombre),*/ strings.ToLower(tipo)
+	/*nombre,*/ tipo = /*strings.ReplaceAll(nombre, " ", ""),*/ strings.ReplaceAll(tipo, " ", "")
 	ej := Ejercicio{Nombre: nombre, Duracion: duracion, Tipo: tipo, Intensidad: intensidad, Calorias: calorias, Descripcion: descripcion}
 	categorias[tipo] = append(categorias[tipo], ej)
 	// fmt.Println(": ", categorias)
@@ -86,7 +86,7 @@ func solicitarYAgregarEjercicio() {
 	scanner.Scan()
 	nombre := scanner.Text()
 
-	fmt.Print("Ingrese la duración del ejercicio (en minutos): ")
+	fmt.Print("Ingrese la duración del ejercicio (en Segundos): ")
 	scanner.Scan()
 	duracionStr := scanner.Text()
 	duracion, err := strconv.Atoi(duracionStr)
@@ -95,13 +95,36 @@ func solicitarYAgregarEjercicio() {
 		return
 	}
 
-	fmt.Print("Ingrese el tipo de ejercicio (por ejemplo, Cardio, Fuerza): ")
+	fmt.Print("Ingrese el tipo de ejercicio (Flexibilidad, Cardio, Fuerza): ")
 	scanner.Scan()
 	tipo := scanner.Text()
-
-	fmt.Print("Ingrese la intensidad del ejercicio (por ejemplo, Baja, Media, Alta): ")
+	tipo = strings.ToLower(tipo)
+	tipo = strings.ReplaceAll(tipo, " ", "")
+	if tipo != "flexibilidad" && tipo != "cardio" && tipo != "fuerza" {
+		for tipo != "flexibilidad" && tipo != "cardio" && tipo != "fuerza" {
+			redPrintf("\nEl tipo de ejercicio ingresado no existe, debe ser uno de los existentes\n")
+			fmt.Print("Ingrese el tipo de ejercicio (Flexibilidad, Cardio, Fuerza): ")
+			scanner.Scan()
+			tipo = scanner.Text()
+			tipo = strings.ToLower(tipo)
+			tipo = strings.ReplaceAll(tipo, " ", "")
+		}
+	}
+	fmt.Print("Ingrese la intensidad del ejercicio (Baja, Media, Alta): ")
 	scanner.Scan()
 	intensidad := scanner.Text()
+	intensidad = strings.ToLower(intensidad)
+	intensidad = strings.ReplaceAll(intensidad, " ", "")
+	if intensidad != "baja" && intensidad != "media" && intensidad != "alta" {
+		for intensidad != "baja" && intensidad != "media" && intensidad != "alta" {
+			redPrintf("\nLa intensidad del ejercicio ingresado no existe, debe ser una de las existentes\n")
+			fmt.Print("Ingrese la intensidad del ejercicio (Baja, Media, Alta): ")
+			scanner.Scan()
+			intensidad = scanner.Text()
+			intensidad = strings.ToLower(intensidad)
+			intensidad = strings.ReplaceAll(intensidad, " ", "")
+		}
+	}
 
 	fmt.Print("Ingrese la cantidad de calorias quemadas: ")
 	scanner.Scan()
@@ -189,42 +212,42 @@ func crearRutinaPersonalizada() Rutina {
 			for i, ejercicio := range ejercicios {
 				bluePrintf("%d.", i+1)
 				fmt.Printf(" %s", ejercicio.Nombre)
-				redPrintf(" (Duración: %d minutos, Intensidad: %s)\n", ejercicio.Duracion, ejercicio.Intensidad)
+				redPrintf(" (Duración: %d Segundos, Intensidad: %s)\n", ejercicio.Duracion, ejercicio.Intensidad)
 			}
 		case "2":
 			greenPrintf("\n\n\n\n\nEjercicios disponibles en la categoría %s:\n\n", categoria)
 			for i, ejercicio := range ejercicios {
 				bluePrintf("%d.", i+1)
 				fmt.Printf(" %s", ejercicio.Nombre)
-				redPrintf(" (Duración: %d minutos, Intensidad: %s)\n", ejercicio.Duracion, ejercicio.Intensidad)
+				redPrintf(" (Duración: %d Segundos, Intensidad: %s)\n", ejercicio.Duracion, ejercicio.Intensidad)
 			}
 		case "3":
 			greenPrintf("\n\n\n\n\nEjercicios disponibles en la categoría %s:\n\n", categoria)
 			for i, ejercicio := range ejercicios {
 				bluePrintf("%d.", i+1)
 				fmt.Printf(" %s", ejercicio.Nombre)
-				redPrintf(" (Duración: %d minutos, Intensidad: %s)\n", ejercicio.Duracion, ejercicio.Intensidad)
+				redPrintf(" (Duración: %d Segundos, Intensidad: %s)\n", ejercicio.Duracion, ejercicio.Intensidad)
 			}
 		case "nombre":
 			greenPrintf("\n\n\n\n\nEjercicios disponibles en la categoría %s:\n\n", categoria)
 			for i, ejercicio := range ejercicios {
 				bluePrintf("%d.", i+1)
 				fmt.Printf(" %s", ejercicio.Nombre)
-				redPrintf(" (Duración: %d minutos, Intensidad: %s)\n", ejercicio.Duracion, ejercicio.Intensidad)
+				redPrintf(" (Duración: %d Segundos, Intensidad: %s)\n", ejercicio.Duracion, ejercicio.Intensidad)
 			}
 		case "duracion":
 			greenPrintf("\n\n\n\n\nEjercicios disponibles en la categoría %s:\n\n", categoria)
 			for i, ejercicio := range ejercicios {
 				bluePrintf("%d.", i+1)
 				fmt.Printf(" %s", ejercicio.Nombre)
-				redPrintf(" (Duración: %d minutos, Intensidad: %s)\n", ejercicio.Duracion, ejercicio.Intensidad)
+				redPrintf(" (Duración: %d Segundos, Intensidad: %s)\n", ejercicio.Duracion, ejercicio.Intensidad)
 			}
 		case "calorias":
 			greenPrintf("\n\n\n\n\nEjercicios disponibles en la categoría %s:\n\n", categoria)
 			for i, ejercicio := range ejercicios {
 				bluePrintf("%d.", i+1)
 				fmt.Printf(" %s", ejercicio.Nombre)
-				redPrintf(" (Duración: %d minutos, Intensidad: %s)\n", ejercicio.Duracion, ejercicio.Intensidad)
+				redPrintf(" (Duración: %d Segundos, Intensidad: %s)\n", ejercicio.Duracion, ejercicio.Intensidad)
 			}
 		}
 
@@ -250,7 +273,7 @@ func crearRutinaPersonalizada() Rutina {
 		fmt.Printf("\n\n\n\n\nSe ha agregado '%s' a su rutina.\n", ejercicioSeleccionado.Nombre)
 	}
 
-	fmt.Printf("La duración total de su rutina es de %d minutos.\n", rutina.DuracionTotal)
+	fmt.Printf("La duración total de su rutina es de %d Segundos.\n", rutina.DuracionTotal)
 	rutinasL = append(rutinasL, rutina)
 
 	//Start save in csv
@@ -402,8 +425,12 @@ func seleccionarEjerciciosParaTiempoMaximo(categoria string, tiempoDisponible in
 	return ejerciciosSeleccionados
 }
 
-func agregarEjerciciosMaximosARutina(nombreDeRut int, categoria string, tiempoDisponible int) {
-	rutinaSeleccionada := &rutinasL[nombreDeRut]
+func agregarEjerciciosMaximosARutina(nombreDeRut string /*nombreDeRut int,*/, categoria string, tiempoDisponible int) {
+
+	// rutinaSeleccionada := &rutinasL[nombreDeRut]
+
+	var rutinaSeleccionada Rutina
+	rutinaSeleccionada.NombreDeRutina = nombreDeRut
 
 	ejerciciosSeleccionados := seleccionarEjerciciosParaTiempoMaximo(categoria, tiempoDisponible)
 	if ejerciciosSeleccionados == nil {
@@ -411,11 +438,36 @@ func agregarEjerciciosMaximosARutina(nombreDeRut int, categoria string, tiempoDi
 	}
 
 	for _, ejercicio := range ejerciciosSeleccionados {
-		agregarEjercicioARutina(rutinaSeleccionada, ejercicio)
+		agregarEjercicioARutina(&rutinaSeleccionada, ejercicio)
 	}
 
 	fmt.Printf("\nSe han agregado %d ejercicios a la rutina '%s' de la categoría '%s' con un tiempo total de %d segundos.\n",
 		len(ejerciciosSeleccionados), rutinaSeleccionada.NombreDeRutina, categoria, rutinaSeleccionada.DuracionTotal)
+
+	rutinasL = append(rutinasL, rutinaSeleccionada)
+	//Start save in csv
+	rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+	defer rutinasFile.Close()
+	rutinasCsv := []*RutinaCsv{}
+	if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Load rutinas from file
+		panic(err)
+	}
+
+	if _, err := rutinasFile.Seek(0, 0); err != nil { // Go to the start of the file
+		panic(err)
+	}
+
+	rutinasCreadas := fmt.Sprintf("%v", len(rutinasCsv)+1)
+
+	rutinasCsv = append(rutinasCsv, &RutinaCsv{Id: rutinasCreadas, NombreDeRutina: rutinaSeleccionada.NombreDeRutina, Ejercicios: rutinaSeleccionada.Ejercicios, DuracionTotal: rutinaSeleccionada.DuracionTotal}) // Add rutinas
+
+	err = gocsv.MarshalFile(&rutinasCsv, rutinasFile) // Use this to save the CSV back to the file
+	if err != nil {
+		panic(err)
+	}
 }
 
 func seleccionarEjerciciosMinDuracion(rutina Rutina, categoria string, tiempoDisponible int, dificultad string, tipo string) []Ejercicio {
