@@ -6,6 +6,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	gocsv "github.com/gocarina/gocsv"
 )
 
 // Función para crear una rutina personalizada.
@@ -137,6 +139,29 @@ func crearRutinaPersonalizada() Rutina {
 
 	fmt.Printf("La duración total de su rutina es de %d minutos.\n", rutina.DuracionTotal)
 	rutinasL = append(rutinasL, rutina)
-	//fmt.Printf("\n\n\n\n RutinasL %+v", rutinasL)
+
+	//Start save in csv
+	rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+	defer rutinasFile.Close()
+	rutinasCsv := []*RutinaCsv{}
+	if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Load rutinas from file
+		panic(err)
+	}
+
+	if _, err := rutinasFile.Seek(0, 0); err != nil { // Go to the start of the file
+		panic(err)
+	}
+
+	rutinasCreadas := fmt.Sprintf("%v", len(rutinasCsv)+1)
+
+	rutinasCsv = append(rutinasCsv, &RutinaCsv{Id: rutinasCreadas, NombreDeRutina: rutina.NombreDeRutina, Ejercicios: rutina.Ejercicios, DuracionTotal: rutina.DuracionTotal}) // Add rutinas
+
+	err = gocsv.MarshalFile(&rutinasCsv, rutinasFile) // Use this to save the CSV back to the file
+	if err != nil {
+		panic(err)
+	}
 	return rutina
 }
