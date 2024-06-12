@@ -52,3 +52,17 @@ func guardarRutinasEnCSV(rutinas []*Rutina) error {
 
 	return nil
 }
+
+// FUNCIONES:
+// func agregarEjercicioARutina(rutina *Rutina, ejercicio Ejercicio)
+// func agregarEjercicioARutinaExistente(nombreDeRut int)
+// func agregarEjercicioACategoria(nombre, tipo string, duracion int, intensidad string, calorias int, descripcion string)
+// func solicitarYAgregarEjercicio()
+// func crearRutinaPersonalizada() Rutina
+// func consultaRutinaCreada(n int) Rutina
+// func modificarRutina(nombreDeRut int)
+// func seleccionarEjerciciosParaTiempoMaximo(categoria string, tiempoDisponible int) []Ejercicio
+// func agregarEjerciciosMaximosARutina(nombreDeRut int, categoria string, tiempoDisponible int)
+// func seleccionarEjerciciosMinDuracion(rutina Rutina, categoria string, tiempoDisponible int, dificultad string, tipo string) []Ejercicio
+// func ejercicioEnRutina(rutina Rutina, ejercicio Ejercicio) bool
+// func (r *RutinaCsv) String() string
