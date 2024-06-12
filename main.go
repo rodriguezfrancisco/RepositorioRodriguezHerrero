@@ -162,6 +162,41 @@ func main() {
 			} else {
 				modificarRutina(seleccion - 1)
 			}
+
+		case "agregarejerciciosmaximosarutina":
+			if len(rutinasL) == 0 {
+				redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
+				continue
+			}
+			greenPrintf("Selecciona la rutina a la que queres agregar ejercicios:\n")
+			for i, v := range rutinasL {
+				rutinaActual := v
+				bluePrintf("%v. ", i+1)
+				fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
+			}
+			scanner.Scan()
+			seleccionIn := scanner.Text()
+			seleccion, err := strconv.Atoi(seleccionIn)
+			if err != nil || seleccion < 1 || seleccion > len(rutinasL) {
+				redPrintf("La rutina seleccionada no existe")
+				continue
+			}
+
+			fmt.Println("Ingrese la categoría de ejercicios:")
+			scanner.Scan()
+			categoria := scanner.Text()
+
+			fmt.Println("Ingrese el tiempo disponible en segundos:")
+			scanner.Scan()
+			tiempoIn := scanner.Text()
+			tiempoDisponible, err := strconv.Atoi(tiempoIn)
+			if err != nil || tiempoDisponible <= 0 {
+				redPrintf("Tiempo no válido.")
+				continue
+			}
+
+			agregarEjerciciosMaximosARutina(seleccion-1, categoria, tiempoDisponible)
+
 		case "salir":
 			fmt.Println("Gracias por usar el gestor de rutinas. ¡Hasta pronto!")
 			return
@@ -247,6 +282,39 @@ func main() {
 				modificarRutina(seleccion - 1)
 			}
 		case "6":
+			if len(rutinasL) == 0 {
+				redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
+				continue
+			}
+			greenPrintf("Selecciona la rutina a la que queres agregar ejercicios:\n")
+			for i, v := range rutinasL {
+				rutinaActual := v
+				bluePrintf("%v. ", i+1)
+				fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
+			}
+			scanner.Scan()
+			seleccionIn := scanner.Text()
+			seleccion, err := strconv.Atoi(seleccionIn)
+			if err != nil || seleccion < 1 || seleccion > len(rutinasL) {
+				redPrintf("La rutina seleccionada no existe")
+				continue
+			}
+
+			fmt.Println("Ingrese la categoría de ejercicios:")
+			scanner.Scan()
+			categoria := scanner.Text()
+
+			fmt.Println("Ingrese el tiempo disponible en segundos:")
+			scanner.Scan()
+			tiempoIn := scanner.Text()
+			tiempoDisponible, err := strconv.Atoi(tiempoIn)
+			if err != nil || tiempoDisponible <= 0 {
+				redPrintf("Tiempo no válido.")
+				continue
+			}
+
+			agregarEjerciciosMaximosARutina(seleccion-1, categoria, tiempoDisponible)
+		case "7":
 			greenPrintf(" \n\n\n\n\n\n\n________________________________________\n")
 			greenPrintf("/ Gracias por usar el gestor de rutinas. \\\n")
 			greenPrintf("\\ ¡Hasta pronto!                          /\n")
