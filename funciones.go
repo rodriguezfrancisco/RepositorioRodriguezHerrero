@@ -532,14 +532,14 @@ func seleccionarEjerciciosEficientes(categoria string, caloriasDeseadas int) []E
 	sort.Slice(ejercicios, func(i, j int) bool {
 		ratioI := float64(ejercicios[i].Calorias) / float64(ejercicios[i].Duracion)
 		ratioJ := float64(ejercicios[j].Calorias) / float64(ejercicios[j].Duracion)
-		return ratioI > ratioJ
+		return ratioI < ratioJ
 	})
 
 	var ejerciciosSeleccionados []Ejercicio
 	caloriasTotales := 0
 
 	for _, ejercicio := range ejercicios {
-		if ejercicio.Calorias >= caloriasDeseadas {
+		if ejercicio.Calorias == caloriasDeseadas {
 			// Si un ejercicio por sí solo cumple el objetivo, seleccionarlo
 			return []Ejercicio{ejercicio}
 		}
