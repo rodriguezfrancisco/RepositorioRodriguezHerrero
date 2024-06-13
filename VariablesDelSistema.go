@@ -9,27 +9,36 @@ import (
 
 // Ejercicio representa un ejercicio individual en la rutina.
 type Ejercicio struct {
-	Nombre      string
-	Duracion    int // Duración del ejercicio en minutos
-	Tipo        string
-	Intensidad  string
-	Calorias    int
-	Descripcion string
-	Dificultad  string
+	Nombre             string
+	Duracion           int // Duración del ejercicio en minutos
+	Tipo               string
+	Intensidad         string
+	Calorias           int
+	Descripcion        string
+	Dificultad         string
+	PuntosCardio       int
+	PuntosFlexibilidad int
+	PuntosFuerza       int
 }
 
 // Rutina representa una serie de ejercicios.
 type Rutina struct {
-	NombreDeRutina string
-	Ejercicios     []Ejercicio
-	DuracionTotal  int
+	NombreDeRutina            string
+	Ejercicios                []Ejercicio
+	DuracionTotal             int
+	PuntosCardioTotales       int
+	PuntosFlexibilidadTotales int
+	PuntosFuerzaTotales       int
 }
 
 type RutinaCsv struct {
-	Id             string      `csv:"client_id"`
-	NombreDeRutina string      `csv:"client_nombre_de_rutina"`
-	Ejercicios     []Ejercicio `csv:"client_ejercicios"`
-	DuracionTotal  int         `csv:"client_duracion_total"`
+	Id                        string      `csv:"client_id"`
+	NombreDeRutina            string      `csv:"client_nombre_de_rutina"`
+	Ejercicios                []Ejercicio `csv:"client_ejercicios"`
+	DuracionTotal             int         `csv:"client_duracion_total"`
+	PuntosCardioTotales       int         `csv:"client_puntos_cardio_totales"`
+	PuntosFlexibilidadTotales int         `csv:"client_puntos_flexibilidad_totales"`
+	PuntosFuerzaTotales       int         `csv:"client_puntos_fuerza_totales"`
 }
 
 // Categorías de ejercicios por tipo usando un mapa.

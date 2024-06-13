@@ -11,14 +11,14 @@ import (
 )
 
 func main() {
-	agregarEjercicioACategoria("Flexiones", "Fuerza", 30, "Media", 10, "brazos a 90")
-	agregarEjercicioACategoria("Salto estrella", "Cardio", 35, "Baja", 15, "saltar haciendo estrellas")
-	agregarEjercicioACategoria("Estiramiento de triceps", "Flexibilidad", 20, "Baja", 15, "poner un brazo atras de la cabeza con el codo apuntando al techo y tirarlo para abajo")
-	agregarEjercicioACategoria("Biceps", "Fuerza", 20, "Media", 15, "levantar las pesas")
-	agregarEjercicioACategoria("Sentadilla", "Fuerza", 15, "Media", 15, "bajar")
-	agregarEjercicioACategoria("Press banca", "Fuerza", 25, "Alta", 28, "acostarse boca arriba y levantar las pesas")
-	agregarEjercicioACategoria("Estocadas", "Cardio", 25, "Baja", 15, "poner una pierna adelante y bajar")
-	agregarEjercicioACategoria("Espagat", "Flexibilidad", 20, "Alta", 15, "Tijeras en el piso")
+	agregarEjercicioACategoria("Flexiones", "Fuerza", 30, "Media", 10, "brazos a 90", 30, 5, 80)
+	agregarEjercicioACategoria("Salto estrella", "Cardio", 35, "Baja", 15, "saltar haciendo estrellas", 70, 20, 5)
+	agregarEjercicioACategoria("Estiramiento de triceps", "Flexibilidad", 20, "Baja", 15, "poner un brazo atras de la cabeza con el codo apuntando al techo y tirarlo para abajo", 0, 100, 0)
+	agregarEjercicioACategoria("Biceps", "Fuerza", 20, "Media", 15, "levantar las pesas", 15, 0, 80)
+	agregarEjercicioACategoria("Sentadilla", "Fuerza", 15, "Media", 15, "bajar", 40, 10, 70)
+	agregarEjercicioACategoria("Press banca", "Fuerza", 25, "Alta", 28, "acostarse boca arriba y levantar las pesas", 20, 0, 90)
+	agregarEjercicioACategoria("Estocadas", "Cardio", 25, "Baja", 15, "poner una pierna adelante y bajar", 65, 60, 40)
+	agregarEjercicioACategoria("Espagat", "Flexibilidad", 20, "Alta", 15, "Tijeras en el piso", 10, 100, 0)
 
 	bluePrintf("\n\n\n\n\n\n\nBienvenido a tu gestor de rutinas de entrenamiento personalizado")
 

@@ -14,6 +14,9 @@ import (
 func agregarEjercicioARutina(rutina *Rutina, ejercicio Ejercicio) {
 	rutina.Ejercicios = append(rutina.Ejercicios, ejercicio)
 	rutina.DuracionTotal += ejercicio.Duracion
+	rutina.PuntosCardioTotales += ejercicio.PuntosCardio
+	rutina.PuntosFlexibilidadTotales += ejercicio.PuntosFlexibilidad
+	rutina.PuntosFuerzaTotales += ejercicio.PuntosFuerza
 
 }
 
@@ -73,6 +76,9 @@ func agregarEjercicioARutinaExistente(nombreDeRut int) {
 	// Obtener el ejercicio seleccionado
 	ejercicioSeleccionado := ejercicios[seleccionEjercicio-1]
 	rutinaNueva.DuracionTotal = rutinaSeleccionada.DuracionTotal
+	rutinaNueva.PuntosCardioTotales = rutinaSeleccionada.PuntosCardioTotales
+	rutinaNueva.PuntosFuerzaTotales = rutinaSeleccionada.PuntosFuerzaTotales
+	rutinaNueva.PuntosFlexibilidadTotales = rutinaSeleccionada.PuntosFlexibilidadTotales
 	rutinaNueva.Ejercicios = rutinaSeleccionada.Ejercicios
 	rutinaNueva.NombreDeRutina = rutinaSeleccionada.NombreDeRutina + "*"
 	// Agregar el ejercicio a la rutina seleccionada
@@ -98,7 +104,7 @@ func agregarEjercicioARutinaExistente(nombreDeRut int) {
 
 	rutinasCreadas := fmt.Sprintf("%v", len(rutinasCsv)+1)
 
-	rutinasCsv = append(rutinasCsv, &RutinaCsv{Id: rutinasCreadas, NombreDeRutina: rutinaNueva.NombreDeRutina, Ejercicios: rutinaNueva.Ejercicios, DuracionTotal: rutinaNueva.DuracionTotal}) // Add rutinas
+	rutinasCsv = append(rutinasCsv, &RutinaCsv{Id: rutinasCreadas, NombreDeRutina: rutinaNueva.NombreDeRutina, Ejercicios: rutinaNueva.Ejercicios, DuracionTotal: rutinaNueva.DuracionTotal, PuntosCardioTotales: rutinaNueva.PuntosCardioTotales, PuntosFlexibilidadTotales: rutinaNueva.PuntosFlexibilidadTotales, PuntosFuerzaTotales: rutinaNueva.PuntosFuerzaTotales}) // Add rutinas
 
 	err = gocsv.MarshalFile(&rutinasCsv, rutinasFile) // Use this to save the CSV back to the file
 	if err != nil {
@@ -107,10 +113,10 @@ func agregarEjercicioARutinaExistente(nombreDeRut int) {
 }
 
 // Función para agregar un ejercicio a una categoría.
-func agregarEjercicioACategoria(nombre, tipo string, duracion int, intensidad string, calorias int, descripcion string) {
+func agregarEjercicioACategoria(nombre, tipo string, duracion int, intensidad string, calorias int, descripcion string, PuntosCardio int, PuntosFlexibilidad int, PuntosFuerza int) {
 	/*nombre,*/ tipo = /*strings.ToLower(nombre),*/ strings.ToLower(tipo)
 	/*nombre,*/ tipo = /*strings.ReplaceAll(nombre, " ", ""),*/ strings.ReplaceAll(tipo, " ", "")
-	ej := Ejercicio{Nombre: nombre, Duracion: duracion, Tipo: tipo, Intensidad: intensidad, Calorias: calorias, Descripcion: descripcion}
+	ej := Ejercicio{Nombre: nombre, Duracion: duracion, Tipo: tipo, Intensidad: intensidad, Calorias: calorias, Descripcion: descripcion, PuntosCardio: PuntosCardio, PuntosFlexibilidad: PuntosFlexibilidad, PuntosFuerza: PuntosFuerza}
 	categorias[tipo] = append(categorias[tipo], ej)
 	// fmt.Println(": ", categorias)
 }
@@ -177,8 +183,35 @@ func solicitarYAgregarEjercicio() {
 	scanner.Scan()
 	descripcion := scanner.Text()
 
+	fmt.Print("Ingrese los puntos de cardio del ejercicio (en numeros (del 0 al 100) o tendrá que hacer todo devuelta): ")
+	scanner.Scan()
+	PuntosCardiostr := scanner.Text()
+	PuntosCardio, err := strconv.Atoi(PuntosCardiostr)
+	if err != nil || PuntosCardio < 0 || PuntosCardio > 100 {
+		redPrintf("\nPuntuacion invalida. Por favor, ingrese un número válido.\n")
+		return
+	}
+
+	fmt.Print("Ingrese los puntos de flexibilidad del ejercicio (en numeros (del 0 al 100) o tendrá que hacer todo devuelta): ")
+	scanner.Scan()
+	PuntosFlexibilidadStr := scanner.Text()
+	PuntosFlexibilidad, err := strconv.Atoi(PuntosFlexibilidadStr)
+	if err != nil || PuntosFlexibilidad < 0 || PuntosFlexibilidad > 100 {
+		redPrintf("\nPuntuacion inválida. Por favor, ingrese un número válido.\n")
+		return
+	}
+
+	fmt.Print("Ingrese los puntos de fuerza del ejercicio (en numeros (del 0 al 100) o tendrá que hacer todo devuelta): ")
+	scanner.Scan()
+	PuntosFuerzaStr := scanner.Text()
+	PuntosFuerza, err := strconv.Atoi(PuntosFuerzaStr)
+	if err != nil || PuntosFuerza < 0 || PuntosFuerza > 100 {
+		redPrintf("\nPuntuacion inválida. Por favor, ingrese un número válido.\n")
+		return
+	}
+
 	// Llamar a agregarEjercicioACategoria para agregar el ejercicio
-	agregarEjercicioACategoria(nombre, tipo, duracion, intensidad, calorias, descripcion)
+	agregarEjercicioACategoria(nombre, tipo, duracion, intensidad, calorias, descripcion, PuntosCardio, PuntosFlexibilidad, PuntosFuerza)
 
 	// Confirmación
 	fmt.Printf("Ejercicio '%s' agregado correctamente a la categoría '%s'.\n", nombre, tipo)
@@ -307,6 +340,9 @@ func crearRutinaPersonalizada() Rutina {
 		ejercicioSeleccionado := ejercicios[ejercicioIndex-1]
 		rutina.Ejercicios = append(rutina.Ejercicios, ejercicioSeleccionado)
 		rutina.DuracionTotal += ejercicioSeleccionado.Duracion
+		rutina.PuntosCardioTotales += ejercicioSeleccionado.PuntosCardio
+		rutina.PuntosFlexibilidadTotales += ejercicioSeleccionado.PuntosFlexibilidad
+		rutina.PuntosFuerzaTotales += ejercicioSeleccionado.PuntosFuerza
 
 		fmt.Printf("\n\n\n\n\nSe ha agregado '%s' a su rutina.\n", ejercicioSeleccionado.Nombre)
 	}
@@ -331,7 +367,7 @@ func crearRutinaPersonalizada() Rutina {
 
 	rutinasCreadas := fmt.Sprintf("%v", len(rutinasCsv)+1)
 
-	rutinasCsv = append(rutinasCsv, &RutinaCsv{Id: rutinasCreadas, NombreDeRutina: rutina.NombreDeRutina, Ejercicios: rutina.Ejercicios, DuracionTotal: rutina.DuracionTotal}) // Add rutinas
+	rutinasCsv = append(rutinasCsv, &RutinaCsv{Id: rutinasCreadas, NombreDeRutina: rutina.NombreDeRutina, Ejercicios: rutina.Ejercicios, DuracionTotal: rutina.DuracionTotal, PuntosCardioTotales: rutina.PuntosCardioTotales, PuntosFlexibilidadTotales: rutina.PuntosFlexibilidadTotales, PuntosFuerzaTotales: rutina.PuntosFuerzaTotales}) // Add rutinas
 
 	err = gocsv.MarshalFile(&rutinasCsv, rutinasFile) // Use this to save the CSV back to the file
 	if err != nil {
@@ -409,6 +445,9 @@ func modificarRutina(nombreDeRut int) {
 				continue
 			}
 			rutinaSeleccionada.DuracionTotal -= rutinaSeleccionada.Ejercicios[seleccion-1].Duracion
+			rutinaSeleccionada.PuntosCardioTotales -= rutinaSeleccionada.Ejercicios[seleccion-1].PuntosCardio
+			rutinaSeleccionada.PuntosFlexibilidadTotales -= rutinaSeleccionada.Ejercicios[seleccion-1].PuntosFlexibilidad
+			rutinaSeleccionada.PuntosFuerzaTotales -= rutinaSeleccionada.Ejercicios[seleccion-1].PuntosFuerza
 			j := rutinaSeleccionada.Ejercicios[:seleccion-1]
 			j = append(j, rutinaSeleccionada.Ejercicios[seleccion:]...)
 			rutinaSeleccionada.Ejercicios = j
@@ -430,7 +469,7 @@ func modificarRutina(nombreDeRut int) {
 
 			rutinasCreadas := fmt.Sprintf("%v", len(rutinasCsv)+1)
 
-			rutinasCsv = append(rutinasCsv, &RutinaCsv{Id: rutinasCreadas, NombreDeRutina: rutinaSeleccionada.NombreDeRutina, Ejercicios: rutinaSeleccionada.Ejercicios, DuracionTotal: rutinaSeleccionada.DuracionTotal}) // Add rutinas
+			rutinasCsv = append(rutinasCsv, &RutinaCsv{Id: rutinasCreadas, NombreDeRutina: rutinaSeleccionada.NombreDeRutina, Ejercicios: rutinaSeleccionada.Ejercicios, DuracionTotal: rutinaSeleccionada.DuracionTotal, PuntosCardioTotales: rutinaSeleccionada.PuntosCardioTotales, PuntosFlexibilidadTotales: rutinaSeleccionada.PuntosFlexibilidadTotales, PuntosFuerzaTotales: rutinaSeleccionada.PuntosFuerzaTotales}) // Add rutinas
 
 			err = gocsv.MarshalFile(&rutinasCsv, rutinasFile) // Use this to save the CSV back to the file
 			if err != nil {
@@ -466,6 +505,9 @@ func modificarRutina(nombreDeRut int) {
 				continue
 			}
 			rutinaSeleccionada.DuracionTotal -= rutinaSeleccionada.Ejercicios[seleccion-1].Duracion
+			rutinaSeleccionada.PuntosCardioTotales -= rutinaSeleccionada.Ejercicios[seleccion-1].PuntosCardio
+			rutinaSeleccionada.PuntosFlexibilidadTotales -= rutinaSeleccionada.Ejercicios[seleccion-1].PuntosFlexibilidad
+			rutinaSeleccionada.PuntosFuerzaTotales -= rutinaSeleccionada.Ejercicios[seleccion-1].PuntosFuerza
 			j := rutinaSeleccionada.Ejercicios[:seleccion-1]
 			j = append(j, rutinaSeleccionada.Ejercicios[seleccion:]...)
 			rutinaSeleccionada.Ejercicios = j
@@ -487,7 +529,7 @@ func modificarRutina(nombreDeRut int) {
 
 			rutinasCreadas := fmt.Sprintf("%v", len(rutinasCsv)+1)
 
-			rutinasCsv = append(rutinasCsv, &RutinaCsv{Id: rutinasCreadas, NombreDeRutina: rutinaSeleccionada.NombreDeRutina, Ejercicios: rutinaSeleccionada.Ejercicios, DuracionTotal: rutinaSeleccionada.DuracionTotal}) // Add rutinas
+			rutinasCsv = append(rutinasCsv, &RutinaCsv{Id: rutinasCreadas, NombreDeRutina: rutinaSeleccionada.NombreDeRutina, Ejercicios: rutinaSeleccionada.Ejercicios, DuracionTotal: rutinaSeleccionada.DuracionTotal, PuntosCardioTotales: rutinaSeleccionada.PuntosCardioTotales, PuntosFlexibilidadTotales: rutinaSeleccionada.PuntosFlexibilidadTotales, PuntosFuerzaTotales: rutinaSeleccionada.PuntosFuerzaTotales}) // Add rutinas
 
 			err = gocsv.MarshalFile(&rutinasCsv, rutinasFile) // Use this to save the CSV back to the file
 			if err != nil {
@@ -704,10 +746,13 @@ func agregarEjerciciosEficientesARutina(nombreDeRut string, categoria string, ca
 	rutinasCreadas := fmt.Sprintf("%v", len(rutinasCsv)+1)
 
 	rutinasCsv = append(rutinasCsv, &RutinaCsv{
-		Id:             rutinasCreadas,
-		NombreDeRutina: rutinaSeleccionada.NombreDeRutina,
-		Ejercicios:     rutinaSeleccionada.Ejercicios,
-		DuracionTotal:  rutinaSeleccionada.DuracionTotal,
+		Id:                        rutinasCreadas,
+		NombreDeRutina:            rutinaSeleccionada.NombreDeRutina,
+		Ejercicios:                rutinaSeleccionada.Ejercicios,
+		DuracionTotal:             rutinaSeleccionada.DuracionTotal,
+		PuntosCardioTotales:       rutinaSeleccionada.PuntosCardioTotales,
+		PuntosFlexibilidadTotales: rutinaSeleccionada.PuntosFlexibilidadTotales,
+		PuntosFuerzaTotales:       rutinaSeleccionada.PuntosFuerzaTotales,
 	}) // Agregar rutinas
 
 	err = gocsv.MarshalFile(&rutinasCsv, rutinasFile) // Guardar el CSV en el archivo
@@ -719,9 +764,9 @@ func agregarEjerciciosEficientesARutina(nombreDeRut string, categoria string, ca
 func (r *RutinaCsv) String() string {
 	ejerciciosStr := make([]string, len(r.Ejercicios))
 	for i, e := range r.Ejercicios {
-		ejerciciosStr[i] = fmt.Sprintf("{Nombre: %s, Duracion: %d, Tipo: %s, Intensidad: %s, Calorias: %d, Descripcion: %s}",
-			e.Nombre, e.Duracion, e.Tipo, e.Intensidad, e.Calorias, e.Descripcion)
+		ejerciciosStr[i] = fmt.Sprintf("{Nombre: %s, Duracion: %d, Tipo: %s, Intensidad: %s, Calorias: %d, Descripcion: %s, PuntosCardio: %d, PuntosFlexibilidad: %d, PuntosFuerza: %d}",
+			e.Nombre, e.Duracion, e.Tipo, e.Intensidad, e.Calorias, e.Descripcion, e.PuntosCardio, e.PuntosFlexibilidad, e.PuntosFuerza)
 	}
-	return fmt.Sprintf("Id: %s, NombreDeRutina: %s, Ejercicios: [%s], DuracionTotal: %d",
-		r.Id, r.NombreDeRutina, strings.Join(ejerciciosStr, ", "), r.DuracionTotal)
+	return fmt.Sprintf("Id: %s, NombreDeRutina: %s, Ejercicios: [%s], DuracionTotal: %d, PuntosCardioTotales: %d, PuntosFlexibilidadTotales: %d, PuntosFuerzaTotales: %d",
+		r.Id, r.NombreDeRutina, strings.Join(ejerciciosStr, ", "), r.DuracionTotal, r.PuntosCardioTotales, r.PuntosFlexibilidadTotales, r.PuntosFuerzaTotales)
 }
