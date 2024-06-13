@@ -44,9 +44,3 @@ Agregar Ejercicios Eficientes a una Rutina: Permite seleccionar una lista de eje
 
 Salir: cierra la ejecucion del programa retornando un mensaje de salida
 
-Por hacer:
-
-1. Refactor para separar todas las funciones del main
-2. Agregar Csv para manejo de datos (Se toma toda la pila y se tranforma en objeto)
-3. Tests para todo
-4. Agregar puntos por categoria (Si hay cardio junto a fuerza seria 1 y 1, si no 1 y 0)
