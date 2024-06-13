@@ -11,8 +11,14 @@ import (
 )
 
 func main() {
-	agregarEjercicioACategoria("Flexiones", "Fuerza", 5, "Media", 10, "brazos a 90")
-	agregarEjercicioACategoria("Sentadillas", "Cardio", 20, "Baja", 15, "bajar")
+	agregarEjercicioACategoria("Flexiones", "Fuerza", 30, "Media", 10, "brazos a 90", 30, 5, 80)
+	agregarEjercicioACategoria("Salto estrella", "Cardio", 35, "Baja", 15, "saltar haciendo estrellas", 70, 20, 5)
+	agregarEjercicioACategoria("Estiramiento de triceps", "Flexibilidad", 20, "Baja", 15, "poner un brazo atras de la cabeza con el codo apuntando al techo y tirarlo para abajo", 0, 100, 0)
+	agregarEjercicioACategoria("Biceps", "Fuerza", 20, "Media", 15, "levantar las pesas", 15, 0, 80)
+	agregarEjercicioACategoria("Sentadilla", "Fuerza", 15, "Media", 15, "bajar", 40, 10, 70)
+	agregarEjercicioACategoria("Press banca", "Fuerza", 25, "Alta", 28, "acostarse boca arriba y levantar las pesas", 20, 0, 90)
+	agregarEjercicioACategoria("Estocadas", "Cardio", 25, "Baja", 15, "poner una pierna adelante y bajar", 65, 60, 40)
+	agregarEjercicioACategoria("Espagat", "Flexibilidad", 20, "Alta", 15, "Tijeras en el piso", 10, 100, 0)
 
 	bluePrintf("\n\n\n\n\n\n\nBienvenido a tu gestor de rutinas de entrenamiento personalizado")
 
@@ -31,8 +37,12 @@ func main() {
 		fmt.Print("Modificar Rutina Creada\n")
 		bluePrintf("6.")
 		fmt.Print("Agregar Ejercicios Máximos a una Rutina\n")
+		/*
+			bluePrintf("7.")
+			fmt.Print("Agregar Ejercicios Minimos a una Rutina\n")
+		*/
 		bluePrintf("7.")
-		fmt.Print("Agregar Ejercicios Minimos a una Rutina\n")
+		fmt.Print("Agregar Ejercicios Eficientes a una Rutina\n") // Nueva opción del menú
 		bluePrintf("8.")
 		fmt.Print("Salir\n\n\n")
 		scanner.Scan()
@@ -75,7 +85,7 @@ func main() {
 			scanner.Scan()
 			seleccionIn := scanner.Text()
 			seleccion, _ := strconv.Atoi(seleccionIn)
-			if len(rutinasL) < seleccion {
+			if len(rutinasCsv) < seleccion {
 				redPrintf("La rutina seleccionada no existe")
 				continue
 			}
@@ -91,23 +101,32 @@ func main() {
 			}
 			bluePrintf("\nRutina: \n\n")
 			greenPrintf(rutina)
-
+			bluePrintf("\n")
 		case "modificarrutinacreada":
-			if len(rutinasL) == 0 {
+			rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+			if err != nil {
+				panic(err)
+			}
+			defer rutinasFile.Close()
+			rutinasCsv := []*RutinaCsv{}
+			if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Load rutinas from file
+				panic(err)
+			}
+			if len(rutinasCsv) == 0 {
 				redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
 				continue
 			}
 			greenPrintf("Selecciona la rutina que queres modificar:\n")
-			for i, v := range rutinasL {
+			for i, v := range rutinasCsv {
 				rutinaActual := v
 				bluePrintf("%v. ", i+1)
-				fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
+				fmt.Printf("%v\n", rutinaActual)
 			}
 
 			scanner.Scan()
 			seleccionIn := scanner.Text()
 			seleccion, _ := strconv.Atoi(seleccionIn)
-			if len(rutinasL) < seleccion {
+			if len(rutinasCsv) < seleccion {
 				redPrintf("La rutina seleccionada no existe")
 				continue
 			}
@@ -123,24 +142,34 @@ func main() {
 			}
 
 		case "agregarejerciciosmaximosarutina":
-			if len(rutinasL) == 0 {
-				redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
-				continue
-			}
-			greenPrintf("Selecciona la rutina a la que queres agregar ejercicios:\n")
-			for i, v := range rutinasL {
-				rutinaActual := v
-				bluePrintf("%v. ", i+1)
-				fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
-			}
-			scanner.Scan()
-			seleccionIn := scanner.Text()
-			seleccion, err := strconv.Atoi(seleccionIn)
-			if err != nil || seleccion < 1 || seleccion > len(rutinasL) {
-				redPrintf("La rutina seleccionada no existe")
-				continue
-			}
+			// if len(rutinasL) == 0 {
+			// 	redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
+			// 	continue
+			// }
+			// greenPrintf("Selecciona la rutina a la que queres agregar ejercicios:\n")
+			// for i, v := range rutinasL {
+			// 	rutinaActual := v
+			// 	bluePrintf("%v. ", i+1)
+			// 	fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
+			// }
+			// scanner.Scan()
+			// seleccionIn := scanner.Text()
+			// seleccion, err := strconv.Atoi(seleccionIn)
+			// if err != nil || seleccion < 1 || seleccion > len(rutinasL) {
+			// 	redPrintf("La rutina seleccionada no existe")
+			// 	continue
+			// }
 
+			scanner := bufio.NewScanner(os.Stdin)
+			// continuar := true
+
+			greenPrintf("\n\n\n\n\n\n\nIngrese un nombre para la rutina:")
+			bluePrintf("(ej: Rutina para Elias)\n\n\n\n\n___________________________________\n")
+
+			scanner.Scan()
+			nombre := scanner.Text()
+			nombre = strings.ToLower(nombre)
+			nombre = strings.ReplaceAll(nombre, " ", "")
 			fmt.Println("Ingrese la categoría de ejercicios:")
 			scanner.Scan()
 			categoria := scanner.Text()
@@ -154,49 +183,70 @@ func main() {
 				continue
 			}
 
-			agregarEjerciciosMaximosARutina(seleccion-1, categoria, tiempoDisponible)
+			agregarEjerciciosMaximosARutina(nombre /*seleccion-1,*/, categoria, tiempoDisponible)
+			/*
+				case "agregarejerciciosminimosarutina": // Nueva opción del menú
+					if len(rutinasL) == 0 {
+						redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
+						continue
+					}
+					greenPrintf("Selecciona la rutina a la que queres agregar ejercicios:\n")
+					for i, v := range rutinasL {
+						rutinaActual := v
+						bluePrintf("%v. ", i+1)
+						fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
+					}
+					scanner.Scan()
+					seleccionIn := scanner.Text()
+					seleccion, err := strconv.Atoi(seleccionIn)
+					if err != nil || seleccion < 1 || seleccion > len(rutinasL) {
+						redPrintf("La rutina seleccionada no existe")
+						continue
+					}
 
-		case "agregarejerciciosminimosarutina": // Nueva opción del menú
-			if len(rutinasL) == 0 {
-				redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
-				continue
-			}
-			greenPrintf("Selecciona la rutina a la que queres agregar ejercicios:\n")
-			for i, v := range rutinasL {
-				rutinaActual := v
-				bluePrintf("%v. ", i+1)
-				fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
-			}
+					fmt.Println("Ingrese la categoría de ejercicios:")
+					scanner.Scan()
+					categoria := scanner.Text()
+
+					fmt.Println("Ingrese el tiempo disponible en segundos:")
+					scanner.Scan()
+					tiempoIn := scanner.Text()
+					tiempoDisponible, err := strconv.Atoi(tiempoIn)
+					if err != nil || tiempoDisponible <= 0 {
+						redPrintf("Tiempo no válido.")
+						continue
+					}
+
+					ejerciciosMin := seleccionarEjerciciosMinDuracion(rutinasL[seleccion-1], categoria, tiempoDisponible, "", "")
+					if len(ejerciciosMin) == 0 {
+						fmt.Println("No se encontraron ejercicios que satisfagan los criterios.")
+					} else {
+						fmt.Println("Ejercicios seleccionados:")
+						for _, ejercicio := range ejerciciosMin {
+							fmt.Printf("    - %s\n", ejercicio.Nombre)
+						}
+					}
+			*/
+		case "agregarejercicioseficientes":
+			// Solicitar datos para agregar ejercicios eficientes a una rutina
+			fmt.Print("Nombre de la rutina: ")
 			scanner.Scan()
-			seleccionIn := scanner.Text()
-			seleccion, err := strconv.Atoi(seleccionIn)
-			if err != nil || seleccion < 1 || seleccion > len(rutinasL) {
-				redPrintf("La rutina seleccionada no existe")
-				continue
-			}
+			nombreDeRutina := scanner.Text()
 
-			fmt.Println("Ingrese la categoría de ejercicios:")
+			fmt.Print("Categoría: ")
 			scanner.Scan()
 			categoria := scanner.Text()
 
-			fmt.Println("Ingrese el tiempo disponible en segundos:")
+			fmt.Print("Calorías deseadas: ")
 			scanner.Scan()
-			tiempoIn := scanner.Text()
-			tiempoDisponible, err := strconv.Atoi(tiempoIn)
-			if err != nil || tiempoDisponible <= 0 {
-				redPrintf("Tiempo no válido.")
+			caloriasDeseadasStr := scanner.Text()
+			caloriasDeseadas, err := strconv.Atoi(caloriasDeseadasStr)
+			if err != nil {
+				fmt.Println("Entrada no válida para calorías.")
 				continue
 			}
 
-			ejerciciosMin := seleccionarEjerciciosMinDuracion(rutinasL[seleccion-1], categoria, tiempoDisponible, "", "")
-			if len(ejerciciosMin) == 0 {
-				fmt.Println("No se encontraron ejercicios que satisfagan los criterios.")
-			} else {
-				fmt.Println("Ejercicios seleccionados:")
-				for _, ejercicio := range ejerciciosMin {
-					fmt.Printf("    - %s\n", ejercicio.Nombre)
-				}
-			}
+			agregarEjerciciosEficientesARutina(nombreDeRutina, categoria, caloriasDeseadas)
 		case "salir":
 			fmt.Println("Gracias por usar el gestor de rutinas. ¡Hasta pronto!")
 			return
@@ -254,21 +304,30 @@ func main() {
 			greenPrintf(rutina)
 			bluePrintf("\n")
 		case "5":
-			if len(rutinasL) == 0 {
+			rutinasFile, err := os.OpenFile("rutinas.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
+			if err != nil {
+				panic(err)
+			}
+			defer rutinasFile.Close()
+			rutinasCsv := []*RutinaCsv{}
+			if err := gocsv.UnmarshalFile(rutinasFile, &rutinasCsv); err != nil { // Load rutinas from file
+				panic(err)
+			}
+			if len(rutinasCsv) == 0 {
 				redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
 				continue
 			}
 			greenPrintf("Selecciona la rutina que queres modificar:\n")
-			for i, v := range rutinasL {
+			for i, v := range rutinasCsv {
 				rutinaActual := v
 				bluePrintf("%v. ", i+1)
-				fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
+				fmt.Printf("%v\n", rutinaActual)
 			}
 
 			scanner.Scan()
 			seleccionIn := scanner.Text()
 			seleccion, _ := strconv.Atoi(seleccionIn)
-			if len(rutinasL) < seleccion {
+			if len(rutinasCsv) < seleccion {
 				redPrintf("La rutina seleccionada no existe")
 				continue
 			}
@@ -283,24 +342,34 @@ func main() {
 				modificarRutina(seleccion - 1)
 			}
 		case "6":
-			if len(rutinasL) == 0 {
-				redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
-				continue
-			}
-			greenPrintf("Selecciona la rutina a la que queres agregar ejercicios:\n")
-			for i, v := range rutinasL {
-				rutinaActual := v
-				bluePrintf("%v. ", i+1)
-				fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
-			}
-			scanner.Scan()
-			seleccionIn := scanner.Text()
-			seleccion, err := strconv.Atoi(seleccionIn)
-			if err != nil || seleccion < 1 || seleccion > len(rutinasL) {
-				redPrintf("La rutina seleccionada no existe")
-				continue
-			}
+			// if len(rutinasL) == 0 {
+			// 	redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
+			// 	continue
+			// }
+			// greenPrintf("Selecciona la rutina a la que queres agregar ejercicios:\n")
+			// for i, v := range rutinasL {
+			// 	rutinaActual := v
+			// 	bluePrintf("%v. ", i+1)
+			// 	fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
+			// }
+			// scanner.Scan()
+			// seleccionIn := scanner.Text()
+			// seleccion, err := strconv.Atoi(seleccionIn)
+			// if err != nil || seleccion < 1 || seleccion > len(rutinasL) {
+			// 	redPrintf("La rutina seleccionada no existe")
+			// 	continue
+			// }
 
+			scanner := bufio.NewScanner(os.Stdin)
+			// continuar := true
+
+			greenPrintf("\n\n\n\n\n\n\nIngrese un nombre para la rutina:")
+			bluePrintf("(ej: Rutina para Elias)\n\n\n\n\n___________________________________\n")
+
+			scanner.Scan()
+			nombre := scanner.Text()
+			nombre = strings.ToLower(nombre)
+			nombre = strings.ReplaceAll(nombre, " ", "")
 			fmt.Println("Ingrese la categoría de ejercicios:")
 			scanner.Scan()
 			categoria := scanner.Text()
@@ -314,48 +383,71 @@ func main() {
 				continue
 			}
 
-			agregarEjerciciosMaximosARutina(seleccion-1, categoria, tiempoDisponible)
-		case "7": // Nueva opción del menú
-			if len(rutinasL) == 0 {
-				redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
-				continue
-			}
-			greenPrintf("Selecciona la rutina a la que queres agregar ejercicios:\n")
-			for i, v := range rutinasL {
-				rutinaActual := v
-				bluePrintf("%v. ", i+1)
-				fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
-			}
-			scanner.Scan()
-			seleccionIn := scanner.Text()
-			seleccion, err := strconv.Atoi(seleccionIn)
-			if err != nil || seleccion < 1 || seleccion > len(rutinasL) {
-				redPrintf("La rutina seleccionada no existe")
-				continue
-			}
-
-			fmt.Println("Ingrese la categoría de ejercicios:")
-			scanner.Scan()
-			categoria := scanner.Text()
-
-			fmt.Println("Ingrese el tiempo disponible en segundos:")
-			scanner.Scan()
-			tiempoIn := scanner.Text()
-			tiempoDisponible, err := strconv.Atoi(tiempoIn)
-			if err != nil || tiempoDisponible <= 0 {
-				redPrintf("Tiempo no válido.")
-				continue
-			}
-
-			ejerciciosMin := seleccionarEjerciciosMinDuracion(rutinasL[seleccion-1], categoria, tiempoDisponible, "", "")
-			if len(ejerciciosMin) == 0 {
-				fmt.Println("No se encontraron ejercicios que satisfagan los criterios.")
-			} else {
-				fmt.Println("Ejercicios seleccionados:")
-				for _, ejercicio := range ejerciciosMin {
-					fmt.Printf("    - %s\n", ejercicio.Nombre)
+			agregarEjerciciosMaximosARutina(nombre /*seleccion-1,*/, categoria, tiempoDisponible)
+		/*
+			case "7": // Nueva opción del menú
+				if len(rutinasL) == 0 {
+					redPrintf("\n\n\nAun no agregaste ninguna rutina\n\n")
+					continue
 				}
+				greenPrintf("Selecciona la rutina a la que queres agregar ejercicios:\n")
+				for i, v := range rutinasL {
+					rutinaActual := v
+					bluePrintf("%v. ", i+1)
+					fmt.Printf("%v\n", rutinaActual.NombreDeRutina)
+				}
+				scanner.Scan()
+				seleccionIn := scanner.Text()
+				seleccion, err := strconv.Atoi(seleccionIn)
+				if err != nil || seleccion < 1 || seleccion > len(rutinasL) {
+					redPrintf("La rutina seleccionada no existe")
+					continue
+				}
+
+				fmt.Println("Ingrese la categoría de ejercicios:")
+				scanner.Scan()
+				categoria := scanner.Text()
+
+				fmt.Println("Ingrese el tiempo disponible en segundos:")
+				scanner.Scan()
+				tiempoIn := scanner.Text()
+				tiempoDisponible, err := strconv.Atoi(tiempoIn)
+				if err != nil || tiempoDisponible <= 0 {
+					redPrintf("Tiempo no válido.")
+					continue
+				}
+
+				ejerciciosMin := seleccionarEjerciciosMinDuracion(rutinasL[seleccion-1], categoria, tiempoDisponible, "", "")
+				if len(ejerciciosMin) == 0 {
+					fmt.Println("No se encontraron ejercicios que satisfagan los criterios.")
+				} else {
+					fmt.Println("Ejercicios seleccionados:")
+					for _, ejercicio := range ejerciciosMin {
+						fmt.Printf("    - %s\n", ejercicio.Nombre)
+					}
+				}
+		*/
+		case "7": // Nueva opción en el menú
+
+			// Solicitar datos para agregar ejercicios eficientes a una rutina
+			fmt.Print("Nombre de la rutina: ")
+			scanner.Scan()
+			nombreDeRutina := scanner.Text()
+
+			fmt.Print("Categoría: ")
+			scanner.Scan()
+			categoria := scanner.Text()
+
+			fmt.Print("Calorías deseadas: ")
+			scanner.Scan()
+			caloriasDeseadasStr := scanner.Text()
+			caloriasDeseadas, err := strconv.Atoi(caloriasDeseadasStr)
+			if err != nil {
+				fmt.Println("Entrada no válida para calorías.")
+				continue
 			}
+
+			agregarEjerciciosEficientesARutina(nombreDeRutina, categoria, caloriasDeseadas)
 		case "8":
 			greenPrintf(" \n\n\n\n\n\n\n________________________________________\n")
 			greenPrintf("/ Gracias por usar el gestor de rutinas. \\\n")
