@@ -683,7 +683,7 @@ func seleccionarEjerciciosEficientes(categoria string, caloriasDeseadas int) []E
 	sort.Slice(ejercicios, func(i, j int) bool {
 		ratioI := float64(ejercicios[i].Calorias) / float64(ejercicios[i].Duracion)
 		ratioJ := float64(ejercicios[j].Calorias) / float64(ejercicios[j].Duracion)
-		return ratioI < ratioJ
+		return ratioI > ratioJ
 	})
 
 	var ejerciciosSeleccionados []Ejercicio
